@@ -170,8 +170,8 @@ drwxrwxrwx 2 root root 4.0K Feb 10  2019  .
 $ cat 'second ingredients'
 cat 'second ingredients'
 THM{* ***** ****}
-```
 
+```
 Durante a enumeração local no diretório `/home/ubuntu`, identifiquei o arquivo `.sudo_as_admin_successful`. Sua presença indica que o usuário `ubuntu` já executou comandos com sudo com êxito, o que pode representar uma potencial brecha para **escalada de privilégio**.
 ``` sh
 $ ls -larth /home/ubuntu
