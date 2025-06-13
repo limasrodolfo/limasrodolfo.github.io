@@ -8,6 +8,7 @@ media_subpath: /assets/images/picklerick
 image:
   path: capa.webp
   alt: Rick e Morty CTF. Ajude a transformar Rick de volta em um humano!
+comments: true
 ---
 
 Este desafio com tema de **Rick and Morty** nos leva a explorar um servidor web em busca de **três ingredientes secretos** para ajudar Rick a preparar uma poção que o transforme novamente em humano, após ter virado um picles.
@@ -143,8 +144,7 @@ www-data
 ```
 
 ## Pós-Exploração
-### PrivEsc  
-
+### Movimentação lateral
 Acessei a home do usuário `rick` e encontrei o **segundo ingrediente:** <!-- 1 jerry tear -->
 ``` sh
 $ pwd
@@ -171,10 +171,7 @@ $ cat 'second ingredients'
 cat 'second ingredients'
 THM{* ***** ****}
 ```
-
-### Escalada de Privilégios
-Ao verificar os privilégios com `sudo -l`, descobri que o usuário www-data pode executar qualquer comando como root sem precisar de senha.
-
+Durante a enumeração local no diretório `/home/ubuntu`, identifiquei o arquivo `.sudo_as_admin_successful`. Sua presença indica que o usuário `ubuntu` já executou comandos com sudo com êxito, o que pode representar uma potencial brecha para **escalada de privilégio**.
 ``` sh
 $ ls -larth /home/ubuntu
 ls -larth /home/ubuntu
@@ -190,8 +187,9 @@ drwx------ 3 ubuntu ubuntu 4.0K Jul 11  2024 .gnupg
 drwxr-xr-x 5 ubuntu ubuntu 4.0K Jul 11  2024 .
 drwx------ 3 ubuntu ubuntu 4.0K Jul 11  2024 .cache
 -rw------- 1 ubuntu ubuntu  769 Jul 11  2024 .bash_history
-$ cat /home/ubuntu/.sudo_as_admin_sucessful
-cat .sudo_as_admin_sucessful
+```
+Com base nessa descoberta, decidi verificar quais comandos o usuário atual `www-data` poderia executar com privilégios elevados, na tentativa de escalar para o usuário `ubuntu`.
+``` sh
 $ sudo -l
 sudo -l
 Matching Defaults entries for www-data on ip-10-10-189-231:
@@ -200,10 +198,15 @@ Matching Defaults entries for www-data on ip-10-10-189-231:
 
 User www-data may run the following commands on ip-10-10-189-231:
     (ALL) NOPASSWD: ALL
+```
+
+Para minha surpresa, `www-data`, mesmo sendo um usuário limitado do servidor web, tinha permissão para usar `sudo` sem senha. Ou seja, já era possível obter acesso root direto. Ainda assim, usei `sudo bash -i` para finalizar o desafio como root.
+```sh
 $ sudo bash -i
 sudo bash -i
 ```
 
+### Escalada de Privilégios
 Já como root, acessei o diretório `/root`, encontrei o **terceiro ingrediente:** <!-- fleeb juice -->
 ```bash
 root@ip-10-10-189-231:/home/rick# cd /root
