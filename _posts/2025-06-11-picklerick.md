@@ -7,7 +7,6 @@ tags: [CTF-Fácil, nmap, gobuster, reverse-shell, privilege-escalation]
 media_subpath: /assets/images/picklerick
 image:
   path: capa.webp
-  alt: Rick e Morty CTF. Ajude a transformar Rick de volta em um humano!
 comments: true
 ---
 
@@ -46,6 +45,7 @@ Nmap done: 1 IP address (1 host up) scanned in 464.72 seconds
 ## Enumeração Web
 ### Análise do Serviço HTTP
 Acessei o endereço e fui recebido por uma página temática de Rick and Morty.
+
 ![](pagina-inicial.webp)
 
 Inspecionando o código-fonte, encontrei um comentário HTML que revela um nome de usuário: <!-- R1ckRul3s -->
@@ -58,6 +58,7 @@ Inspecionando o código-fonte, encontrei um comentário HTML que revela um nome 
 
 ### Descoberta de Arquivos e Diretórios com GoBuster
 Utilizei o ´gobuster´ para descobrir arquivos e diretórios ocultos:
+
 ```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/picklerick]
 └─$ gobuster dir -u http://10.10.189.231 -e -w /usr/share/wordlists/quickhits.txt -t 100 -q
@@ -98,10 +99,12 @@ http://10.10.189.231/server-status/       (Status: 403) [Size: 278]
 
 ### login.php
 A página `login.php` revela a seguinte interface:
+
 ![](pagina-login.webp)
 
 ### robots.txt <!-- Wubbalubbadubdub -->
 O arquivo `robots.txt` contém uma string sugestiva, provavelmente a senha:
+
 ```html
 THM{****************}
 ```
@@ -110,9 +113,11 @@ Com essas informações, fui para a tentativa de login.
 ## Exploração e Execução Remota
 ### Acesso via Painel de Comandos
 Após logar, encontrei um painel com um campo para execução de comandos. Tentei listar arquivos e encontrei o **primeiro ingrediente:** <!-- mr. meeseek hair -->
+
 ![](painel-comando.webp)
 
 Apesar do comando `cat` estar bloqueado, foi possível contornar usando `tac` para leitura de arquivo. <!-- tac -->
+
 ![](comando-desabilitado.webp)
 
 ```sh
@@ -122,7 +127,6 @@ THM{*** ******* ****}
 
 ### Shell Reversa
 O campo de entrada aceita comandos do sistema, permitindo execução remota (RCE). Utilizamos esse vetor para obter uma **reverse shell**:
-
 
 ``` console
 # kali (listener)
@@ -147,6 +151,7 @@ www-data
 ## Pós-Exploração
 ### Movimentação lateral
 Acessei a home do usuário `rick` e encontrei o **segundo ingrediente:** <!-- 1 jerry tear -->
+
 ``` console
 $ pwd
 pwd
@@ -203,6 +208,7 @@ User www-data may run the following commands on ip-10-10-189-231:
 ```
 
 Para minha surpresa, `www-data`, mesmo sendo um usuário limitado do servidor web, tinha permissão para usar `sudo` sem senha. Ou seja, já era possível obter acesso root direto. Ainda assim, usei `sudo bash -i` para finalizar o desafio como root.
+
 ```console
 $ sudo bash -i
 sudo bash -i
@@ -211,6 +217,7 @@ root@ip-10-10-189-231:/home/rick#
 
 ### Escalada de Privilégios
 Já como `root`, acessei o diretório `/root`, e encontrei o **terceiro ingrediente:** <!-- fleeb juice -->
+
 ```console
 root@ip-10-10-189-231:/home/rick# cd /root
 cd /root

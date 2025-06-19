@@ -4,6 +4,8 @@ icon: fas fa-info-circle
 order: 4
 ---
 
+[](https://tryhackme.com/api/v2/badges/public-profile?userPublicId=4166412")
+
 Esta página é dedicada à documentação das minhas experiências resolvendo salas no [TryHackMe](https://tryhackme.com/) e outras plataformas de CTF.  
 
 O objetivo deste material é:
